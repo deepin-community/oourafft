@@ -1,0 +1,64 @@
+cmake_minimum_required(VERSION 3.10)
+
+set(fft2d_POPULATED TRUE)
+set(FFT2D_FOUND TRUE)
+set(FFT2D_INCLUDE_DIRS "/usr/include/fft2d" CACHE STRING "FFT2D include dirs")
+
+add_library(fft2d INTERFACE)
+target_include_directories(fft2d INTERFACE ${FFT2D_INCLUDE_DIRS})
+
+add_library(fft2d_alloc STATIC IMPORTED)
+set_target_properties(fft2d_alloc PROPERTIES
+  IMPORTED_LOCATION "/usr/lib/@ARCH_TRIPLET@/libfft2d_alloc.a"
+  INTERFACE_INCLUDE_DIRECTORIES "/usr/include/fft2d"
+)
+
+add_library(fft2d_fft4f2d STATIC IMPORTED)
+set_target_properties(fft2d_fft4f2d PROPERTIES
+  IMPORTED_LOCATION "/usr/lib/@ARCH_TRIPLET@/libfft2d_fft4f2d.a"
+  INTERFACE_INCLUDE_DIRECTORIES "/usr/include/fft2d"
+)
+
+add_library(fft2d_fftsg STATIC IMPORTED)
+set_target_properties(fft2d_fftsg PROPERTIES
+  IMPORTED_LOCATION "/usr/lib/@ARCH_TRIPLET@/libfft2d_fftsg.a"
+  INTERFACE_INCLUDE_DIRECTORIES "/usr/include/fft2d"
+)
+if(NOT CMAKE_SYSTEM_NAME STREQUAL Windows)
+  set_property(TARGET fft2d_fftsg PROPERTY INTERFACE_LINK_LIBRARIES m)
+endif()
+
+add_library(fft2d_fftsg2d STATIC IMPORTED)
+set_target_properties(fft2d_fftsg2d PROPERTIES
+  IMPORTED_LOCATION "/usr/lib/@ARCH_TRIPLET@/libfft2d_fftsg2d.a"
+  INTERFACE_INCLUDE_DIRECTORIES "/usr/include/fft2d"
+)
+set_property(TARGET fft2d_fftsg2d PROPERTY INTERFACE_LINK_LIBRARIES fft2d_fftsg)
+
+add_library(fft2d_fftsg3d STATIC IMPORTED)
+set_target_properties(fft2d_fftsg3d PROPERTIES
+  IMPORTED_LOCATION "/usr/lib/@ARCH_TRIPLET@/libfft2d_fftsg3d.a"
+  INTERFACE_INCLUDE_DIRECTORIES "/usr/include/fft2d"
+)
+set_property(TARGET fft2d_fftsg3d PROPERTY INTERFACE_LINK_LIBRARIES fft2d_fftsg)
+
+add_library(fft2d_shrtdct STATIC IMPORTED)
+set_target_properties(fft2d_shrtdct PROPERTIES
+  IMPORTED_LOCATION "/usr/lib/@ARCH_TRIPLET@/libfft2d_shrtdct.a"
+  INTERFACE_INCLUDE_DIRECTORIES "/usr/include/fft2d"
+)
+
+set(FFT2D_LIBRARIES
+  fft2d_alloc
+  fft2d_fft4f2d
+  fft2d_fftsg
+  fft2d_fftsg2d
+  fft2d_fftsg3d
+  fft2d_shrtdct
+  CACHE STRING "FFT2D libraries"
+)
+
+mark_as_advanced(FFT2D_INCLUDE_DIRS FFT2D_LIBRARIES)
+
+message(STATUS "Using system FFT2D installation")
+message(STATUS "  FFT2D_INCLUDE_DIRS: ${FFT2D_INCLUDE_DIRS}")
